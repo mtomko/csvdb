@@ -8,7 +8,7 @@ version := "0.1"
 
 scalaVersion := "2.11.4"
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Dscalac.patmat.analysisBudget=off")
+scalacOptions ++= Seq("-Xlint", "-unchecked", "-deprecation", "-feature", "-Xfatal-warnings")
 
 javacOptions in Compile ++= Seq("-source", "1.7", "-target", "1.7", "-Xlint:unchecked", "-Xlint:deprecation")
 

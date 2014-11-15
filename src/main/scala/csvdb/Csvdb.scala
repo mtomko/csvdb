@@ -50,13 +50,13 @@ object Csvdb {
     reader.setHistory(new FileHistory(new File(new File(System.getProperty("user.home")),
                                                       ".csvdb_history")))
 
-    def loop(): Unit = {
+    @tailrec def loop(): Unit = {
       accumulateStatement(reader) match {
         case Some(statement) =>
           executeStatement(statement)
           loop()
         case None =>
-          println("Done")
+          //println("Done")
       }
     }
     loop()
@@ -89,7 +89,7 @@ object Csvdb {
     val headers = (1 to lines map { n: Int => s"_$n" }).mkString(",")
     for (stmt <- managed(conn.createStatement())) {
       val file = new File(filename)
-      val tableName = file.getName.replace('.', '_')
+      val tableName = tableNameFor(file)
       stmt.execute(
         s"""create table $tableName as
            |select
@@ -97,8 +97,16 @@ object Csvdb {
            |from csvread('$filename',
            |             '$headers',
            |             'charset=UTF-8')""".stripMargin)
+      1 to lines foreach { n =>
+        stmt.execute(s"create index ${tableName}_${n}_idx on $tableName(_$n)")
+      }
     }
   }
+
+  def tableNameFor(f: File): String =
+    f.getName
+      .replace('.', '_')
+      .replace('-', '_')
 
   def countColumns(file: String, delimiter: String): Int = {
     val source = Source.fromFile(file)
