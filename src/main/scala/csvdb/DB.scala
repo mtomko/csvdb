@@ -56,19 +56,26 @@ object DB {
 
     // create the table
     for (stmt <- managed(conn.createStatement())) {
-      stmt.execute(
+      val succeeded = stmt.execute(
         s"""create table $tableName as
            |select
            |  *
            |from csvread('$filename',
            |             '$headers',
            |             'charset=UTF-8')""".stripMargin)
+      if (!succeeded) {
+        println(s"Unable to load table $tableName")
+        System.exit(-2)
+      }
     }
 
     // we're going to blindly index all columns for now
     1 to columns foreach { n =>
       for (stmt <- managed(conn.createStatement())) {
-        stmt.execute(s"create index ${tableName}_${n}_idx on $tableName(_$n)")
+        val succeeded = stmt.execute(s"create index ${tableName}_${n}_idx on $tableName(_$n)")
+        if (!succeeded) {
+          println(s"Unable to index column $n, continuing anyway.")
+        }
       }
     }
   }

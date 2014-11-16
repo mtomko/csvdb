@@ -48,8 +48,7 @@ object IO {
     TerminalFactory.reset()
     val reader = new ConsoleReader("csvdb", System.in, System.out, TerminalFactory.get())
     reader.setHistoryEnabled(true)
-    reader.setHistory(new FileHistory(new File(new File(System.getProperty("user.home")),
-                                               ".csvdb_history")))
+    reader.setHistory(fileHistory)
 
     @tailrec def loop(): Unit = {
       accumulateStatement(reader) match {
@@ -76,5 +75,9 @@ object IO {
     }
     acc("", "> ")
   }
+
+  private[csvdb] lazy val fileHistory =
+    new FileHistory(new File(new File(System.getProperty("user.home")),
+                             ".csvdb_history"))
 
 }

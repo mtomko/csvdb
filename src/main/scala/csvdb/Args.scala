@@ -12,23 +12,27 @@ private[csvdb] object Args {
   var help: Boolean = false
 
   // we probably need a grammar for providing delimiters so you can give a delimiter per file
-  @Parameter(names = Array("-d"), description = "Per-file delimiter settings")
-  var delimiter: String = ""
+  @Parameter(names = Array("-d"), description = "Per-file delimiter settings.")
+  var delimiter: String = null
 
-  @Parameter(names = Array("-H"), description = "Files with headers")
+  @Parameter(names = Array("-H"),
+             description = "Files with headers. Not implemented yet.")
   var filesWithHeaders: String = null
 
-  @Parameter(names = Array("-q"), description = "File containing a query or set of queries to execute")
+  @Parameter(names = Array("-q"),
+             description = "File containing a query or set of queries to execute. Not implemented yet.")
   var queryFile: String = null
 
-  @Parameter(description = "Files")
+  @Parameter(description = "CSV or TSV Files to represent as tables.")
   var files: util.List[String] = new util.ArrayList[String]()
 
   lazy val filesByIndex: Map[Int, String] = files.asScala.zipWithIndex.map { case (file, idx) =>
     (idx + 1) -> file
   }(breakOut)
 
+  //TODO: select a delimiter other than ';', because the shell treats them as command separators
   lazy val delimiterFor: Map[String, String] = {
+    if (delimiter == null) delimiter = ""
     delimiter.split(";", -1).flatMap { ds: String =>
       ds.split(":").toList match {
         case file :: delim :: Nil => filesByIndex.get(file.toInt) map (_ -> delim)
