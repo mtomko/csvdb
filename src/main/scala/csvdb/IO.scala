@@ -1,13 +1,17 @@
 package csvdb
 
 import java.io.File
-import java.sql.{ResultSet, Connection}
+import java.sql.{Connection, ResultSet}
 
 import jline.TerminalFactory
 import jline.console.ConsoleReader
 import jline.console.history.FileHistory
 
 import scala.annotation.tailrec
+import scala.io.Source
+import scala.util.{Failure, Try}
+
+import resource._
 
 object IO {
 
@@ -17,6 +21,13 @@ object IO {
     while(rs.next()) {
       println((1 to ncols map { c => rs.getObject(c) }).mkString("\t"))
     }
+  }
+
+  private[csvdb] def file(file: String)(implicit conn: Connection): Boolean = {
+    for(source <- managed(Source.fromFile(file))) {
+      //TODO: Fill this in
+    }
+    true
   }
 
   private[csvdb] def repl(implicit conn: Connection): Unit = {
@@ -30,7 +41,10 @@ object IO {
     @tailrec def loop(): Unit = {
       accumulateStatement(reader) match {
         case Some(statement) =>
-          DB.executeStatement(printResults)(statement)
+          Try { DB.executeStatement(printResults)(statement) } match {
+            case Failure(e) => println(e.getMessage)
+            case _ =>
+          }
           loop()
         case None =>
       }

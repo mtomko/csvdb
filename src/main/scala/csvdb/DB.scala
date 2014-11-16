@@ -11,16 +11,13 @@ import scala.io.Source
 
 object DB {
 
-  val user = ""
-  val pass = ""
-
   private[this] lazy val ds: DataSource = {
     val _ = classOf[org.h2.Driver]
     val ds = new JdbcDataSource()
     //from http://stackoverflow.com/questions/5763747/h2-in-memory-database-what-am-i-missing
     ds.setURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
-    ds.setUser(user)
-    ds.setPassword(pass)
+    ds.setUser("")
+    ds.setPassword("")
     ds
   }
 
