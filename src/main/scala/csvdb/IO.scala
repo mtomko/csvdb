@@ -22,7 +22,7 @@ object IO {
   private[csvdb] def repl(implicit conn: Connection): Unit = {
     TerminalFactory.configure(TerminalFactory.AUTO)
     TerminalFactory.reset()
-    val reader = new ConsoleReader("csvdb", System.in, System.out, null)//, TerminalFactory.create())
+    val reader = new ConsoleReader("csvdb", System.in, System.out, TerminalFactory.get())
     reader.setHistoryEnabled(true)
     reader.setHistory(new FileHistory(new File(new File(System.getProperty("user.home")),
                                                ".csvdb_history")))

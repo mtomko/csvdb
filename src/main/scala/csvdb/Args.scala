@@ -7,7 +7,7 @@ import com.beust.jcommander.Parameter
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
 
-object Args {
+private[csvdb] object Args {
   @Parameter(names = Array("-?", "--help"), help = true)
   var help: Boolean = false
 
@@ -29,7 +29,7 @@ object Args {
   }(breakOut)
 
   lazy val delimiterFor: Map[String, String] = {
-    delimiter.split(",", -1).flatMap { ds: String =>
+    delimiter.split(";", -1).flatMap { ds: String =>
       ds.split(":").toList match {
         case file :: delim :: Nil => filesByIndex.get(file.toInt) map (_ -> delim)
         case _ => None
