@@ -1,7 +1,7 @@
 package csvdb
 
 import java.io.File
-import java.sql.{ResultSet, Connection}
+import java.sql.Connection
 
 import csvdb.DB._
 import jline.TerminalFactory

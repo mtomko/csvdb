@@ -13,7 +13,7 @@ private[csvdb] object Args {
 
   // we probably need a grammar for providing delimiters so you can give a delimiter per file
   @Parameter(names = Array("-d"), description = "Per-file delimiter settings")
-  var delimiter: String = null
+  var delimiter: String = ""
 
   @Parameter(names = Array("-H"), description = "Files with headers")
   var filesWithHeaders: String = null
