@@ -1,25 +1,38 @@
 package csvdb
 
 import java.io.File
-import java.sql.{Connection, ResultSet}
+import java.sql.{ResultSet, Connection}
 
+import csvdb.DB._
 import jline.TerminalFactory
 import jline.console.ConsoleReader
 import jline.console.history.FileHistory
+import resource._
 
 import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.{Failure, Try}
 
-import resource._
-
 object IO {
 
-  def printResults(rs: ResultSet): Unit = {
-    val md = rs.getMetaData
-    val ncols = md.getColumnCount
-    while(rs.next()) {
-      println((1 to ncols map { c => rs.getObject(c) }).mkString("\t"))
+  /** Prints the results of a query, and the number of affected rows for deletes and updates */
+  def printResults(results: ResultType): Unit = {
+    results match {
+      case Select(_, rs) =>
+        val md = rs.getMetaData
+        val ncols = md.getColumnCount
+        @tailrec def loop(): Unit = {
+          if (rs.next()) {
+            println((1 to ncols map { c => rs.getString(c) }).mkString("\t"))
+            loop()
+          }
+        }
+        loop()
+      case Update(_, rows) => println(s"$rows updated.")
+      case Delete(_, rows) => println(s"$rows deleted.")
+      case Other(_, succeeded) =>
+        if (succeeded) println("Succeeded.")
+        else println("Failed.")
     }
   }
 
