@@ -8,6 +8,7 @@ import org.h2.jdbcx.JdbcDataSource
 import resource._
 
 import scala.io.Source
+import scala.util.{Success, Failure, Try}
 
 object DB {
 
@@ -56,25 +57,28 @@ object DB {
 
     // create the table
     for (stmt <- managed(conn.createStatement())) {
-      val succeeded = stmt.execute(
+      val sql =
         s"""create table $tableName as
            |select
            |  *
            |from csvread('$filename',
            |             '$headers',
-           |             'charset=UTF-8')""".stripMargin)
-      if (!succeeded) {
-        println(s"Unable to load table $tableName")
-        System.exit(-2)
+           |             'charset=UTF-8')""".stripMargin
+      Try { stmt.execute(sql) } match {
+        case Success(_) =>
+        case Failure(e) =>
+          println(s"Unable to load table $tableName: ${e.getMessage}")
+          System.exit(-2)
       }
     }
 
     // we're going to blindly index all columns for now
     1 to columns foreach { n =>
       for (stmt <- managed(conn.createStatement())) {
-        val succeeded = stmt.execute(s"create index ${tableName}_${n}_idx on $tableName(_$n)")
-        if (!succeeded) {
-          println(s"Unable to index column $n, continuing anyway.")
+        Try { stmt.execute(s"create index ${tableName}_${n}_idx on $tableName(_$n)") } match {
+          case Success(_) =>
+          case Failure(e) =>
+            println(s"Unable to index column $n, continuing anyway: ${e.getMessage}")
         }
       }
     }
