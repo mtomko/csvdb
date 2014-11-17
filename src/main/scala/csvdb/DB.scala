@@ -52,7 +52,7 @@ object DB {
 
   def loadCsv(filename: String, delimiter: String)(implicit conn: Connection): Unit = {
     val columns = countColumns(filename, delimiter)
-    val headers = syntheticHeaders(columns)
+    val headers = syntheticHeaders(columns, delimiter)
     val tableName = tableNameFor(filename)
 
     // create the table
@@ -63,7 +63,7 @@ object DB {
            |  *
            |from csvread('$filename',
            |             '$headers',
-           |             'charset=UTF-8')""".stripMargin
+           |             'charset=UTF-8 fieldSeparator=$delimiter')""".stripMargin
       Try { stmt.execute(sql) } match {
         case Success(_) =>
         case Failure(e) =>
@@ -84,11 +84,11 @@ object DB {
     }
   }
 
-  private[csvdb] def syntheticHeaders(columns: Int): String =
-    (1 to columns map { n: Int => s"_$n" }).mkString(",")
+  private[csvdb] def syntheticHeaders(columns: Int, delimiter: String): String =
+    (1 to columns map { n: Int => s"_$n" }).mkString(delimiter)
 
   /* use these simple regexes to determine what kind of statement we're running */
-  private lazy val QueryRe = """^\s*(?:(?:select)|(?:with)).*""".r
+  private lazy val QueryRe = """^\s*select.*""".r
   private lazy val UpdateRe = """^\s*update.*""".r
   private lazy val DeleteRe = """^\s*delete.*""".r
 
