@@ -30,9 +30,7 @@ object IO {
         loop()
       case Update(_, rows) => println(s"$rows updated.")
       case Delete(_, rows) => println(s"$rows deleted.")
-      case Other(_, succeeded) =>
-        if (succeeded) println("Succeeded.")
-        else println("Failed.")
+      case Other(_, succeeded) => println("Succeeded.")
     }
   }
 

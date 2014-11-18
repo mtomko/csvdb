@@ -46,7 +46,10 @@ object DB {
   def executeStatement(f: ResultType => Unit)(sql: String)(implicit conn: Connection): Unit = {
     for(stmt <- managed(conn.createStatement);
         result <- managed(executeQueryOrUpdate(stmt, sql))) {
-      f(result)
+      Try { f(result) } match {
+        case Success(_) =>
+        case Failure(e) => println(s"Error: ${e.getMessage}")
+      }
     }
   }
 
