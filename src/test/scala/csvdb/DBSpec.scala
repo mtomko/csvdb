@@ -18,6 +18,8 @@ class DBSpec extends FlatSpec with Matchers {
       """.stripMargin
     DB.countColumns(Source.fromString(csv), ",") should be (5)
 
+    // this test fails if I don't use a string context; there's something funky going on here w.r.t.
+    // the interpretation of tabs
     val tsv =
       s"""foo\tbar\tbaz\tthis is a thing\tquux,
          |monkey, monkey

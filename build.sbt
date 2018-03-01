@@ -1,16 +1,12 @@
-import AssemblyKeys._
-
 organization := "org.marktomko"
 
 name := "csvdb"
 
 version := "0.9"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.12.4"
 
 scalacOptions ++= Seq("-Xlint", "-unchecked", "-deprecation", "-feature", "-Xfatal-warnings")
-
-resolvers ++= CsvdbBuild.resolvers
 
 libraryDependencies ++= CsvdbBuild.dependencies
 
@@ -19,10 +15,4 @@ traceLevel in run := 0
 
 parallelExecution in Test := true
 
-jarName in assembly := "../bin/csvdb.jar"
-
-assemblySettings
-
-//wartremoverErrors ++= Warts.all
-
-//wartremoverExcluded ++= Seq("csvdb.Args")
+assemblyJarName in assembly := "../bin/csvdb.jar"

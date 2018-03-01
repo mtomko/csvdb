@@ -3,7 +3,7 @@ package csvdb
 import java.io.File
 import java.sql.Connection
 
-import csvdb.DB._
+import csvdb.DB.{Delete, Other, ResultType, Select, Update}
 import jline.TerminalFactory
 import jline.console.ConsoleReader
 import jline.console.history.FileHistory
@@ -36,7 +36,8 @@ object IO {
 
   private[csvdb] def file(file: String)(implicit conn: Connection): Boolean = {
     for(source <- managed(Source.fromFile(file))) {
-      //TODO: Fill this in
+      // TODO: fill this in
+      conn.rollback()
     }
     true
   }
